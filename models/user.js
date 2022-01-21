@@ -48,6 +48,12 @@ module.exports = (sequelize, DataTypes) => {
           notEmpty: true,
         },
       },
+      resetToken: {
+        type: DataTypes.STRING,
+      },
+      resetTokenExpiration: {
+        type: DataTypes.DATE,
+      },
     },
     {
       sequelize,

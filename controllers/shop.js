@@ -173,12 +173,12 @@ exports.postOrder = (req, res, next) => {
       return cart.getProducts();
     })
     .then((products) => {
-      return req.user
+        return req.user
         .createOrder()
         .then((order) => {
           return order.addProducts(
             products.map((product) => {
-              product.orderItem = { quantity: product.CartItem.quantity };
+              product.OrderItem = { quantity: product.CartItem.quantity };
               return product;
             })
           );
@@ -203,9 +203,9 @@ exports.postOrder = (req, res, next) => {
 };
 
 exports.getOrders = (req, res, next) => {
-  Order.findAll({ where: { userId: req.user.id } })
+  Order.findAll({ where: { userId: req.user.id }, include: ['products']})
     .then((orders) => {
-      res.render("shop/orders", {
+       res.render("shop/orders", {
         path: "/orders",
         pageTitle: "Your Orders",
         orders: orders,
@@ -220,12 +220,12 @@ exports.getOrders = (req, res, next) => {
 
 exports.getInvoice = (req, res, next) => {
   const orderId = req.params.orderId;
-  Order.findByPk(orderId)
+     Order.findByPk(orderId,{ include: ['products']})
     .then((order) => {
       if (!order) {
         return next(new Error("No order found."));
       }
-      if (order.user.userId !== req.user.id) {
+      if (order.userId !== req.user.id) {
         return next(new Error("Unauthorized"));
       }
       const invoiceName = "invoice-" + orderId + ".pdf";
@@ -245,17 +245,17 @@ exports.getInvoice = (req, res, next) => {
       });
       pdfDoc.text("-----------------------");
       let totalPrice = 0;
-      order.products.forEach((prod) => {
-        totalPrice += prod.quantity * prod.product.price;
+        order.products.forEach((prod) => {
+        totalPrice += prod.OrderItem.quantity * prod.price;
         pdfDoc
           .fontSize(14)
           .text(
-            prod.product.title +
+            prod.title +
               " - " +
-              prod.quantity +
+              prod.OrderItem.quantity +
               " x " +
               "$" +
-              prod.product.price
+              prod.price
           );
       });
       pdfDoc.text("---");
@@ -263,5 +263,5 @@ exports.getInvoice = (req, res, next) => {
 
       pdfDoc.end();
     })
-    .catch((err) => next(err));
+    .catch((err) => console.log(err));
 };

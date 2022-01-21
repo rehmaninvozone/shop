@@ -11,7 +11,7 @@ const transporter = nodemailer.createTransport(
   sendgridTransport({
     auth: {
       api_key:
-        "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",
+        "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",
     },
   })
 );
@@ -197,7 +197,7 @@ exports.postReset = (req, res, next) => {
         res.redirect("/");
         transporter.sendMail({
           to: req.body.email,
-          from: "shop@node-complete.com",
+          from: "abdulrehmandar2234@gmail.com",
           subject: "Password reset",
           html: `
             <p>You requested a password reset</p>
@@ -229,7 +229,7 @@ exports.getNewPassword = (req, res, next) => {
         path: "/new-password",
         pageTitle: "New Password",
         errorMessage: message,
-        userId: user.id.toString(),
+        userId: user.id,
         passwordToken: token,
       });
     })
